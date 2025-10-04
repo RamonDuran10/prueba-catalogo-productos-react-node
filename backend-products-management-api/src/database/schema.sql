@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS products (
 
 -- Datos de ejemplo
 INSERT INTO categories (name, description) VALUES
-('ropa de hombre', 'Ropa y accesorios para hombres'),
-('ropa de mujer', 'Ropa y accesorios para mujeres'),
-('electrónicos', 'Dispositivos electrónicos y tecnología'),
-('joyería', 'Joyas y accesorios'),
-('hogar', 'Artículos para el hogar')
+('Ropa de Hombre', 'Ropa y accesorios para hombres'),
+('Ropa de Mujer', 'Ropa y accesorios para mujeres'),
+('Electrónicos', 'Dispositivos electrónicos y tecnología'),
+('Joyería', 'Joyas y accesorios'),
+('Hogar', 'Artículos para el hogar')
 ON CONFLICT (name) DO NOTHING;
