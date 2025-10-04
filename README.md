@@ -5,6 +5,7 @@ Aplicación web full-stack para gestionar productos y categorías con React, Nod
 ### Prerrequisitos
 - Docker y Docker Compose instalados
 
+
 ### Instalación y Ejecución
 
 1. **Clonar el repositorio**
