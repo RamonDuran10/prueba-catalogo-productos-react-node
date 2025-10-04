@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { productService } from '../../../services/api';
+import { productService, categoryService } from '../../../services/api';
 import { showDeleteConfirm, showSuccess, showError } from '../../../utils/alerts';
 import '../productos.css';
 
@@ -7,6 +7,11 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [filters, setFilters] = useState({
+    search: '',
+    category_id: ''
+  });
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -17,24 +22,20 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
   });
 
   useEffect(() => {
-    fetchProducts(pagination.currentPage);
+    fetchProductsWithFilters(pagination.currentPage);
+    fetchCategories();
   }, []);
 
-
-  const fetchProducts = async (page = 1) => {
+  const fetchCategories = async () => {
     try {
-      setLoading(true);
-      const response = await productService.getAll(page, pagination.limit);
-      setProducts(response.data.data);
-      setPagination(response.data.pagination);
-      setError(null);
+      const response = await categoryService.getAll();
+      setCategories(response.data.data || []);
     } catch (err) {
-      setError('Error al cargar productos');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Error al cargar categorías:', err);
     }
   };
+
+
 
   const handleDelete = async (id, productTitle) => {
     const result = await showDeleteConfirm(
@@ -46,7 +47,7 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
       try {
         await productService.delete(id);
         await showSuccess('Producto eliminado', 'El producto ha sido eliminado correctamente.');
-        fetchProducts(pagination.currentPage);
+        fetchProductsWithFilters(pagination.currentPage);
       } catch (err) {
         await showError('Error al eliminar', 'No se pudo eliminar el producto. Por favor, inténtalo de nuevo.');
         console.error(err);
@@ -59,7 +60,54 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
   };
 
   const handlePageChange = (newPage) => {
-    fetchProducts(newPage);
+    fetchProductsWithFilters(newPage);
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const handleApplyFilters = () => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    fetchProductsWithFilters(1);
+  };
+
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      search: '',
+      category_id: ''
+    };
+    setFilters(clearedFilters);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    
+    // Fetch products with cleared filters immediately
+    fetchProductsWithFilters(1, clearedFilters);
+  };
+
+  // Verificar si hay filtros aplicados
+  const hasActiveFilters = filters.search.trim() !== '' || filters.category_id !== '';
+
+  // Verificar si los filtros han cambiado desde el último fetch
+  const hasFiltersChanged = () => {
+    return filters.search.trim() !== '' || filters.category_id !== '';
+  };
+
+  const fetchProductsWithFilters = async (page = 1, filtersToUse = filters) => {
+    try {
+      setLoading(true);
+      const response = await productService.getAll(page, pagination.limit, filtersToUse);
+      setProducts(response.data.data);
+      setPagination(response.data.pagination);
+      setError(null);
+    } catch (err) {
+      setError('Error al cargar productos');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div className="loading">Cargando productos...</div>;
@@ -71,11 +119,63 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
         <h2>Lista de Productos</h2>
         <button 
           className="btn btn-secondary"
-          onClick={() => fetchProducts(pagination.currentPage)}
+          onClick={() => fetchProductsWithFilters(pagination.currentPage)}
           disabled={loading}
         >
           {loading ? 'Cargando...' : 'Actualizar'}
         </button>
+      </div>
+
+      <div className="filters-section">
+        <div className="filters-row">
+          <div className="filter-group">
+            <label htmlFor="search-filter">Buscar por nombre:</label>
+            <input
+              id="search-filter"
+              type="text"
+              placeholder="Ingresa el nombre del producto..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange('search', e.target.value)}
+              className="filter-input"
+            />
+          </div>
+          
+          <div className="filter-group">
+            <label htmlFor="category-filter">Categoría:</label>
+            <select
+              id="category-filter"
+              value={filters.category_id}
+              onChange={(e) => handleFilterChange('category_id', e.target.value)}
+              className="filter-select"
+            >
+              <option value="">Todas las categorías</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="filter-actions">
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={handleApplyFilters}
+              disabled={loading || !hasFiltersChanged()}
+              title={!hasFiltersChanged() ? "No hay filtros para aplicar" : "Aplicar filtros"}
+            >
+              Filtrar
+            </button>
+            <button 
+              className="btn btn-secondary btn-sm"
+              onClick={handleClearFilters}
+              disabled={loading || !hasActiveFilters}
+              title={!hasActiveFilters ? "No hay filtros para limpiar" : "Limpiar filtros"}
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
       </div>
       
       <div className="table-wrapper">

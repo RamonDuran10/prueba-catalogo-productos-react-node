@@ -11,7 +11,15 @@ const api = axios.create({
 
 // Productos
 export const productService = {
-  getAll: (page = 1, limit = 10) => api.get(`/products?page=${page}&limit=${limit}`),
+  getAll: (page = 1, limit = 10, filters = {}) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(filters.search && { search: filters.search }),
+      ...(filters.category_id && { category_id: filters.category_id })
+    });
+    return api.get(`/products?${params}`);
+  },
   getById: (id) => api.get(`/products/${id}`),
   create: (product) => api.post('/products', product),
   update: (id, product) => api.put(`/products/${id}`, product),

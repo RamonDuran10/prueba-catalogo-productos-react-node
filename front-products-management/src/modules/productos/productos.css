@@ -972,3 +972,100 @@
     gap: 10px;
   }
 }
+
+/* Filtros */
+.filters-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.filters-row {
+  display: flex;
+  align-items: end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9em;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+  box-sizing: border-box;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.filter-actions .btn {
+  padding: 10px 16px;
+  font-size: 13px;
+  min-width: 80px;
+  transition: all 0.3s ease;
+}
+
+.filter-actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.filter-actions .btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive para filtros */
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .filter-group {
+    min-width: auto;
+  }
+
+  .filter-actions {
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .filter-actions .btn {
+    flex: 1;
+    min-width: auto;
+  }
+}
