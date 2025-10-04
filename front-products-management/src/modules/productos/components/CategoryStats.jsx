@@ -35,12 +35,12 @@ const CategoryStats = () => {
 
     if (result.isConfirmed) {
       try {
-        // TODO: Implementar endpoint de eliminación en el backend
-        // await categoryService.delete(categoryId);
+        await categoryService.delete(categoryId);
         await showSuccess('Categoría eliminada', 'La categoría ha sido eliminada correctamente.');
         fetchCategories();
       } catch (err) {
-        await showError('Error al eliminar', 'No se pudo eliminar la categoría. Por favor, inténtalo de nuevo.');
+        const errorMessage = err.response?.data?.message || 'No se pudo eliminar la categoría. Por favor, inténtalo de nuevo.';
+        await showError('Error al eliminar', errorMessage);
         console.error(err);
       }
     }

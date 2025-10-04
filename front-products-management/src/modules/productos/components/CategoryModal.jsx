@@ -67,7 +67,23 @@ const CategoryModal = ({ isOpen, onClose, onSave }) => {
       onClose();
     } catch (err) {
       console.error('Error al crear categoría:', err);
-      await showError('Error al crear', 'No se pudo crear la categoría. Por favor, inténtalo de nuevo.');
+      
+      // Manejar diferentes tipos de errores
+      if (err.response?.status === 409) {
+        // Error de categoría duplicada
+        setErrors({
+          name: err.response.data.message || 'Esta categoría ya existe'
+        });
+      } else if (err.response?.status === 400) {
+        // Error de validación
+        const errorMessage = err.response.data.message || 'Datos inválidos';
+        setErrors({
+          name: errorMessage.includes('name') ? 'El nombre es requerido' : ''
+        });
+      } else {
+        // Error general
+        await showError('Error al crear', err.response?.data?.message || 'No se pudo crear la categoría. Por favor, inténtalo de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
