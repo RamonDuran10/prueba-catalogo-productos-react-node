@@ -13,7 +13,11 @@ const getProducts = async (req, res) => {
     let paramIndex = 1;
 
     if (searchName) {
-      whereConditions.push(`p.title ILIKE $${paramIndex}`);
+      // Búsqueda simple con ILIKE
+      whereConditions.push(`(
+        p.title ILIKE $${paramIndex} OR 
+        p.description ILIKE $${paramIndex}
+      )`);
       queryParams.push(`%${searchName}%`);
       paramIndex++;
     }
@@ -26,22 +30,45 @@ const getProducts = async (req, res) => {
 
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
+    // Crear parámetros separados para la consulta de conteo
+    const countParams = [];
+    
+    if (searchName) {
+      countParams.push(`%${searchName}%`);
+    }
+    
+    if (categoryId) {
+      countParams.push(categoryId);
+    }
+
     const countQuery = `
       SELECT COUNT(*) FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       ${whereClause}
     `;
 
-    const countResult = await pool.query(countQuery, queryParams);
+    const countResult = await pool.query(countQuery, countParams);
     const totalProducts = parseInt(countResult.rows[0].count);
+
+    // Construir ORDER BY dinámico basado en si hay búsqueda
+    let orderByClause = 'ORDER BY p.id';
+    if (searchName) {
+      orderByClause = `ORDER BY 
+        CASE 
+          WHEN p.title ILIKE $1 THEN 1
+          WHEN p.description ILIKE $1 THEN 2
+          ELSE 3
+        END,
+        p.id`;
+    }
 
     const dataQuery = `
       SELECT p.*, c.name as category_name, c.description as category_description
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       ${whereClause}
-      ORDER BY p.id
-      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      ${orderByClause}
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
     `;
 
     queryParams.push(limit, offset);
