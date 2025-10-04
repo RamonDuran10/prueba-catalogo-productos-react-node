@@ -5,19 +5,47 @@ const getProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const searchName = req.query.search || '';
+    const categoryId = req.query.category_id || '';
 
-    // Obtener total de productos
-    const countResult = await pool.query('SELECT COUNT(*) FROM products');
+    let whereConditions = [];
+    let queryParams = [];
+    let paramIndex = 1;
+
+    if (searchName) {
+      whereConditions.push(`p.title ILIKE $${paramIndex}`);
+      queryParams.push(`%${searchName}%`);
+      paramIndex++;
+    }
+
+    if (categoryId) {
+      whereConditions.push(`p.category_id = $${paramIndex}`);
+      queryParams.push(categoryId);
+      paramIndex++;
+    }
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
+    const countQuery = `
+      SELECT COUNT(*) FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      ${whereClause}
+    `;
+
+    const countResult = await pool.query(countQuery, queryParams);
     const totalProducts = parseInt(countResult.rows[0].count);
 
-    // Obtener productos paginados
-    const result = await pool.query(`
+    const dataQuery = `
       SELECT p.*, c.name as category_name, c.description as category_description
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
+      ${whereClause}
       ORDER BY p.id
-      LIMIT $1 OFFSET $2
-    `, [limit, offset]);
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+    `;
+
+    queryParams.push(limit, offset);
+    const result = await pool.query(dataQuery, queryParams);
 
     const totalPages = Math.ceil(totalProducts / limit);
 
