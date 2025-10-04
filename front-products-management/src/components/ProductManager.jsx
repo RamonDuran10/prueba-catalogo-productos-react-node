@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ProductTable, ProductForm, CategoryStats } from '../modules/productos';
+import { ProductTable, ProductForm, CategoryStats, CategoryModal } from '../modules/productos';
 import '../modules/productos/productos.css';
 
 const ProductManager = () => {
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -20,8 +21,6 @@ const ProductManager = () => {
   const handleFormSave = () => {
     setShowForm(false);
     setEditingProduct(null);
-    // Limpiar localStorage para forzar recarga
-    localStorage.removeItem('latestProducts');
     // Actualizar trigger para forzar recarga de componentes
     setRefreshTrigger(prev => prev + 1);
   };
@@ -31,12 +30,31 @@ const ProductManager = () => {
     setEditingProduct(null);
   };
 
+  const handleNewCategory = () => {
+    setShowCategoryModal(true);
+  };
+
+  const handleCategoryModalClose = () => {
+    setShowCategoryModal(false);
+  };
+
+  const handleCategoryModalSave = () => {
+    // Actualizar trigger para forzar recarga de componentes
+    setRefreshTrigger(prev => prev + 1);
+  };
+
 
   return (
     <div className="product-manager">
       <header className="product-header">
         <h1>Gestionar productos</h1>
         <nav>
+          <button 
+            className="btn btn-secondary"
+            onClick={handleNewCategory}
+          >
+            Crear Categoría
+          </button>
           <button 
             className="btn btn-primary"
             onClick={handleNewProduct}
@@ -60,6 +78,12 @@ const ProductManager = () => {
           </div>
         )}
       </main>
+
+      <CategoryModal
+        isOpen={showCategoryModal}
+        onClose={handleCategoryModalClose}
+        onSave={handleCategoryModalSave}
+      />
     </div>
   );
 };

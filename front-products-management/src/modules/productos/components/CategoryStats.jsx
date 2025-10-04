@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { categoryService } from '../../../services/api';
+import { showDeleteConfirm, showSuccess, showError } from '../../../utils/alerts';
 import '../productos.css';
 
 const CategoryStats = () => {
@@ -26,6 +27,25 @@ const CategoryStats = () => {
     }
   };
 
+  const handleDeleteCategory = async (categoryId, categoryName) => {
+    const result = await showDeleteConfirm(
+      '¿Eliminar categoría?',
+      `¿Estás seguro de que quieres eliminar "${categoryName}"? Esta acción no se puede deshacer.`
+    );
+
+    if (result.isConfirmed) {
+      try {
+        // TODO: Implementar endpoint de eliminación en el backend
+        // await categoryService.delete(categoryId);
+        await showSuccess('Categoría eliminada', 'La categoría ha sido eliminada correctamente.');
+        fetchCategories();
+      } catch (err) {
+        await showError('Error al eliminar', 'No se pudo eliminar la categoría. Por favor, inténtalo de nuevo.');
+        console.error(err);
+      }
+    }
+  };
+
   if (loading) return <div className="loading">Cargando estadísticas...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -33,7 +53,6 @@ const CategoryStats = () => {
 
   return (
     <div className="category-stats">
-      <h2>Indicadores de productos</h2>
       <div className="stats-summary">
         <div className="stat-card">
           <h3>{categories.length}</h3>
@@ -45,19 +64,23 @@ const CategoryStats = () => {
         </div>
       </div>
       
-      <div className="category-list">
-        {categories.map((category) => (
-          <div key={category.id} className="category-item">
-            <div className="category-info">
-              <h3>{category.name}</h3>
-              <p>{category.description || 'Sin descripción'}</p>
+      <div className="category-chips">
+        <h3>Categorías disponibles</h3>
+        <div className="chips-container">
+          {categories.map((category) => (
+            <div key={category.id} className="category-chip">
+              <span className="chip-name">{category.name}</span>
+              <span className="chip-count">{category.products_count || 0}</span>
+              <button
+                className="chip-delete"
+                onClick={() => handleDeleteCategory(category.id, category.name)}
+                title="Eliminar categoría"
+              >
+                ×
+              </button>
             </div>
-            <div className="category-count">
-              <span className="product-count">{category.products_count || 0}</span>
-              <p>productos</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
