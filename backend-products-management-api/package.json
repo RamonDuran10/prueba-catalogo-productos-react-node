@@ -1,0 +1,26 @@
+{
+  "name": "backend-products-management-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed": "node -e \"require('./src/database/seedData').seedDatabase().then(() => process.exit(0)).catch(() => process.exit(1))\"",
+    "clean": "node -e \"require('./src/database/cleanAndSeed').cleanAndSeed().then(() => process.exit(0)).catch(() => process.exit(1))\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

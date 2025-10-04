@@ -1,0 +1,75 @@
+/* Estilos generales de la aplicación */
+.App {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  width: 100%;
+}
+
+/* Header general */
+.product-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 30px 40px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.product-header h1 {
+  color: white;
+  margin: 0;
+  font-size: 2.2em;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.product-header nav {
+  display: flex;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Main content */
+.product-main {
+  width: 100%;
+  padding: 40px 20px;
+  background: linear-gradient(to bottom, #f8f9ff 0%, #f5f5f5 100%);
+  min-height: calc(100vh - 120px);
+}
+
+/* Layout */
+@media (max-width: 768px) {
+  .product-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 25px 20px;
+  }
+  
+  .product-header h1 {
+    font-size: 1.8em;
+  }
+  
+  .product-main {
+    padding: 30px 15px;
+  }
+}
