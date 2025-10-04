@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { productService, categoryService } from '../../../services/api';
 import { showDeleteConfirm, showSuccess, showError } from '../../../utils/alerts';
+import ProductDetailModal from './ProductDetailModal';
 import '../productos.css';
 
 const ProductTable = ({ onEditProduct, onNewProduct }) => {
@@ -12,6 +13,8 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
     search: '',
     category_id: ''
   });
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -85,6 +88,16 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
     
     // Fetch products with cleared filters immediately
     fetchProductsWithFilters(1, clearedFilters);
+  };
+
+  const handleViewDetail = (product) => {
+    setSelectedProduct(product);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedProduct(null);
   };
 
   // Verificar si hay filtros aplicados
@@ -220,6 +233,13 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
                   <td>
                     <div className="table-actions">
                       <button 
+                        className="btn btn-info btn-sm"
+                        onClick={() => handleViewDetail(product)}
+                        title="Ver detalles del producto"
+                      >
+                        Ver
+                      </button>
+                      <button 
                         className="btn btn-secondary btn-sm"
                         onClick={() => handleEdit(product)}
                       >
@@ -277,6 +297,13 @@ const ProductTable = ({ onEditProduct, onNewProduct }) => {
           </button>
         </div>
       )}
+
+      {/* Modal de detalle del producto */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={showDetailModal}
+        onClose={handleCloseDetailModal}
+      />
     </div>
   );
 };

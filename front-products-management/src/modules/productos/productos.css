@@ -391,6 +391,19 @@
   background: linear-gradient(135deg, rgba(255, 107, 107, 1) 0%, rgba(238, 90, 36, 1) 100%);
 }
 
+.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(23, 162, 184, 0.4);
+  opacity: 0.9;
+}
+
+.btn-info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(23, 162, 184, 0.6);
+  opacity: 1;
+}
+
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -1067,5 +1080,105 @@
   .filter-actions .btn {
     flex: 1;
     min-width: auto;
+  }
+}
+
+/* Product Detail Modal Styles */
+.product-detail-modal {
+  max-width: 700px;
+}
+
+.product-detail-content {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.product-detail-image {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.detail-product-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.product-detail-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.detail-field {
+  margin-bottom: 20px;
+}
+
+.detail-field label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  margin: 0;
+  color: #666;
+  font-size: 1em;
+  line-height: 1.5;
+  padding: 8px 0;
+}
+
+.detail-value.price {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+.detail-value.category {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.detail-value.description {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.detail-value.category-description {
+  font-style: italic;
+  color: #888;
+}
+
+@media (max-width: 768px) {
+  .product-detail-content {
+    flex-direction: column;
+  }
+  
+  .product-detail-image,
+  .product-detail-info {
+    min-width: unset;
+  }
+  
+  .detail-product-image {
+    max-width: 200px;
   }
 }
